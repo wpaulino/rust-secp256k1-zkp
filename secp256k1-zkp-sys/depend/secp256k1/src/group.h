@@ -185,11 +185,19 @@ static void rustsecp256k1zkp_v0_10_0_gej_rescale(rustsecp256k1zkp_v0_10_0_gej *r
 
 /** Convert a group element that is not infinity to a 64-byte array. The output
  *  array is platform-dependent. */
-static void rustsecp256k1zkp_v0_10_0_ge_to_bytes(unsigned char *buf, rustsecp256k1zkp_v0_10_0_ge *a);
+static void rustsecp256k1zkp_v0_10_0_ge_to_bytes(unsigned char *buf, const rustsecp256k1zkp_v0_10_0_ge *a);
 
 /** Convert a 64-byte array into group element. This function assumes that the
  *  provided buffer correctly encodes a group element. */
 static void rustsecp256k1zkp_v0_10_0_ge_from_bytes(rustsecp256k1zkp_v0_10_0_ge *r, const unsigned char *buf);
+
+/** Convert a group element (that is allowed to be infinity) to a 64-byte
+ *  array. The output array is platform-dependent. */
+static void rustsecp256k1zkp_v0_10_0_ge_to_bytes_ext(unsigned char *data, const rustsecp256k1zkp_v0_10_0_ge *ge);
+
+/** Convert a 64-byte array into a group element. This function assumes that the
+ *  provided buffer is the output of rustsecp256k1zkp_v0_10_0_ge_to_bytes_ext. */
+static void rustsecp256k1zkp_v0_10_0_ge_from_bytes_ext(rustsecp256k1zkp_v0_10_0_ge *ge, const unsigned char *data);
 
 /** Determine if a point (which is assumed to be on the curve) is in the correct (sub)group of the curve.
  *

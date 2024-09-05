@@ -84,7 +84,7 @@ static void rustsecp256k1zkp_v0_10_0_musig_aggnonce_save(rustsecp256k1zkp_v0_10_
     int i;
     memcpy(&nonce->data[0], rustsecp256k1zkp_v0_10_0_musig_aggnonce_magic, 4);
     for (i = 0; i < 2; i++) {
-        rustsecp256k1zkp_v0_10_0_point_save_ext(&nonce->data[4 + 64*i], &ge[i]);
+        rustsecp256k1zkp_v0_10_0_ge_to_bytes_ext(&nonce->data[4 + 64*i], &ge[i]);
     }
 }
 
@@ -93,7 +93,7 @@ static int rustsecp256k1zkp_v0_10_0_musig_aggnonce_load(const rustsecp256k1zkp_v
 
     ARG_CHECK(rustsecp256k1zkp_v0_10_0_memcmp_var(&nonce->data[0], rustsecp256k1zkp_v0_10_0_musig_aggnonce_magic, 4) == 0);
     for (i = 0; i < 2; i++) {
-        rustsecp256k1zkp_v0_10_0_point_load_ext(&ge[i], &nonce->data[4 + 64*i]);
+        rustsecp256k1zkp_v0_10_0_ge_from_bytes_ext(&ge[i], &nonce->data[4 + 64*i]);
     }
     return 1;
 }
