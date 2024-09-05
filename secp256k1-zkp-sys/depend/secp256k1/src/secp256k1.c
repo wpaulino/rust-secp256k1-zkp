@@ -862,3 +862,7 @@ static int rustsecp256k1zkp_v0_10_0_ge_parse_ext(rustsecp256k1zkp_v0_10_0_ge* ge
 #ifdef ENABLE_MODULE_SURJECTIONPROOF
 #include "modules/surjection/main_impl.h"
 #endif
+
+#ifdef ENABLE_MODULE_FROST
+#include "modules/frost/main_impl.h"
+#endif

@@ -17,23 +17,6 @@
 #include "../../hash.h"
 #include "../../util.h"
 
-static void rustsecp256k1zkp_v0_10_0_point_save_ext(unsigned char *data, rustsecp256k1zkp_v0_10_0_ge *ge) {
-    if (rustsecp256k1zkp_v0_10_0_ge_is_infinity(ge)) {
-        memset(data, 0, 64);
-    } else {
-        rustsecp256k1zkp_v0_10_0_ge_to_bytes(data, ge);
-    }
-}
-
-static void rustsecp256k1zkp_v0_10_0_point_load_ext(rustsecp256k1zkp_v0_10_0_ge *ge, const unsigned char *data) {
-    unsigned char zeros[64] = { 0 };
-    if (rustsecp256k1zkp_v0_10_0_memcmp_var(data, zeros, sizeof(zeros)) == 0) {
-        rustsecp256k1zkp_v0_10_0_ge_set_infinity(ge);
-    } else {
-        rustsecp256k1zkp_v0_10_0_ge_from_bytes(ge, data);
-    }
-}
-
 static const unsigned char rustsecp256k1zkp_v0_10_0_musig_keyagg_cache_magic[4] = { 0xf4, 0xad, 0xbb, 0xdf };
 
 /* A keyagg cache consists of
@@ -52,7 +35,7 @@ static void rustsecp256k1zkp_v0_10_0_keyagg_cache_save(rustsecp256k1zkp_v0_10_0_
     ptr += 4;
     rustsecp256k1zkp_v0_10_0_ge_to_bytes(ptr, &cache_i->pk);
     ptr += 64;
-    rustsecp256k1zkp_v0_10_0_point_save_ext(ptr, &cache_i->second_pk);
+    rustsecp256k1zkp_v0_10_0_ge_to_bytes_ext(ptr, &cache_i->second_pk);
     ptr += 64;
     memcpy(ptr, cache_i->pk_hash, 32);
     ptr += 32;
@@ -67,7 +50,7 @@ static int rustsecp256k1zkp_v0_10_0_keyagg_cache_load(const rustsecp256k1zkp_v0_
     ptr += 4;
     rustsecp256k1zkp_v0_10_0_ge_from_bytes(&cache_i->pk, ptr);
     ptr += 64;
-    rustsecp256k1zkp_v0_10_0_point_load_ext(&cache_i->second_pk, ptr);
+    rustsecp256k1zkp_v0_10_0_ge_from_bytes_ext(&cache_i->second_pk, ptr);
     ptr += 64;
     memcpy(cache_i->pk_hash, ptr, 32);
     ptr += 32;

@@ -27,12 +27,6 @@ typedef struct {
     int parity_acc;
 } rustsecp256k1zkp_v0_10_0_keyagg_cache_internal;
 
-/* point_save_ext and point_load_ext are identical to point_save and point_load
- * except that they allow saving and loading the point at infinity */
-static void rustsecp256k1zkp_v0_10_0_point_save_ext(unsigned char *data, rustsecp256k1zkp_v0_10_0_ge *ge);
-
-static void rustsecp256k1zkp_v0_10_0_point_load_ext(rustsecp256k1zkp_v0_10_0_ge *ge, const unsigned char *data);
-
 static int rustsecp256k1zkp_v0_10_0_keyagg_cache_load(const rustsecp256k1zkp_v0_10_0_context* ctx, rustsecp256k1zkp_v0_10_0_keyagg_cache_internal *cache_i, const rustsecp256k1zkp_v0_10_0_musig_keyagg_cache *cache);
 
 static void rustsecp256k1zkp_v0_10_0_musig_keyaggcoef(rustsecp256k1zkp_v0_10_0_scalar *r, const rustsecp256k1zkp_v0_10_0_keyagg_cache_internal *cache_i, rustsecp256k1zkp_v0_10_0_ge *pk);
