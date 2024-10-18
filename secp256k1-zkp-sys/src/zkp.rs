@@ -2,7 +2,7 @@ use core::{
     fmt,
     hash::{self, Hash},
 };
-use {types::*, Context, PublicKey, Signature};
+use {types::*, Context, PublicKey, Signature, XOnlyPublicKey};
 
 /// Rangeproof maximum length
 pub const RANGEPROOF_MAX_LENGTH: size_t = 5134;
@@ -391,6 +391,282 @@ extern "C" {
         n_keys: size_t,
         sub_pubkey: *const PublicKey,
     ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubnonce_parse"
+    )]
+    pub fn secp256k1_frost_pubnonce_parse(
+        ctx: *const Context,
+        nonce: *mut FrostPublicNonce,
+        in66: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubnonce_serialize"
+    )]
+    pub fn secp256k1_frost_pubnonce_serialize(
+        ctx: *const Context,
+        out66: *mut c_uchar,
+        nonce: *const FrostPublicNonce,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_parse"
+    )]
+    pub fn secp256k1_frost_partial_sig_parse(
+        ctx: *const Context,
+        frost_partial_sig: *mut FrostPartialSignature,
+        in32: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_serialize"
+    )]
+    pub fn secp256k1_frost_partial_sig_serialize(
+        ctx: *const Context,
+        out32: *mut c_uchar,
+        frost_partial_sig: *const FrostPartialSignature,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_share_parse"
+    )]
+    pub fn secp256k1_frost_share_parse(
+        ctx: *const Context,
+        share: *mut FrostShare,
+        in32: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_share_serialize"
+    )]
+    pub fn secp256k1_frost_share_serialize(
+        ctx: *const Context,
+        out32: *mut c_uchar,
+        share: *const FrostShare,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_shares_gen"
+    )]
+    pub fn secp256k1_frost_shares_gen(
+        ctx: *const Context,
+        shares: *mut FrostShare,
+        vss_commitments: *mut PublicKey,
+        pok64: *mut c_uchar,
+        seed32: *const c_uchar,
+        threshold: size_t,
+        n_participants: size_t,
+        ids33: *const *const c_uchar,
+    ) -> c_uint;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_share_agg"
+    )]
+    pub fn secp256k1_frost_share_agg(
+        ctx: *const Context,
+        agg_share: *mut FrostShare,
+        agg_vss_commitment: *mut PublicKey,
+        shares: *const *const FrostShare,
+        vss_commitments: *const *const PublicKey,
+        pok64s: *const *const c_uchar,
+        n_shares: size_t,
+        threshold: size_t,
+        id33: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_share_verify"
+    )]
+    pub fn secp256k1_frost_share_verify(
+        ctx: *const Context,
+        threshold: size_t,
+        id33: *const c_uchar,
+        share: *const FrostShare,
+        vss_commitment: *const PublicKey,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_compute_pubshare"
+    )]
+    pub fn secp256k1_frost_compute_pubshare(
+        ctx: *const Context,
+        pubshare: *mut PublicKey,
+        threshold: size_t,
+        id33: *const c_uchar,
+        agg_vss_commitment: *const PublicKey,
+        n_participants: size_t,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_gen"
+    )]
+    pub fn secp256k1_frost_pubkey_gen(
+        ctx: *const Context,
+        keygen_cache: *mut FrostKeygenCache,
+        pubshares: *const *const PublicKey,
+        n_pubshares: size_t,
+        ids33: *const *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_get"
+    )]
+    pub fn secp256k1_frost_pubkey_get(
+        ctx: *const Context,
+        pk: *mut PublicKey,
+        keygen_cache: *const FrostKeygenCache,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_ec_tweak_add"
+    )]
+    pub fn secp256k1_frost_pubkey_ec_tweak_add(
+        ctx: *const Context,
+        output_pubkey: *mut PublicKey, // Can be NULL
+        keygen_cache: *mut FrostKeygenCache,
+        tweak32: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_xonly_tweak_add"
+    )]
+    pub fn secp256k1_frost_pubkey_xonly_tweak_add(
+        ctx: *const Context,
+        output_pubkey: *mut PublicKey, // Can be NULL
+        keygen_cache: *mut FrostKeygenCache,
+        tweak32: *const c_uchar,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_gen"
+    )]
+    pub fn secp256k1_frost_nonce_gen(
+        ctx: *const Context,
+        secnonce: *const FrostSecretNonce,
+        pubnonce: *const FrostPublicNonce,
+        session_id32: *const c_uchar,
+        agg_share: *const FrostShare,          // Can be NULL
+        msg32: *const c_uchar,                 // Can be NULL
+        keygen_cache: *const FrostKeygenCache, // Can be NULL
+        extra_input32: *const c_uchar,         // Can be NULL
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_process"
+    )]
+    pub fn secp256k1_frost_nonce_process(
+        ctx: *const Context,
+        session: *mut FrostSession,
+        pubnonces: *const *const FrostPublicNonce,
+        n_pubnonces: size_t,
+        msg32: *const c_uchar,
+        my_id33: *const c_uchar,
+        ids33: *const *const c_uchar,
+        keygen_cache: *const FrostKeygenCache,
+        adaptor: *const PublicKey, // Can be NULL
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sign"
+    )]
+    pub fn secp256k1_frost_partial_sign(
+        ctx: *const Context,
+        partial_sig: *mut FrostPartialSignature,
+        secnonce: *mut FrostSecretNonce,
+        agg_share: *const FrostShare,
+        session: *const FrostSession,
+        keygen_cache: *const FrostKeygenCache,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_verify"
+    )]
+    pub fn secp256k1_frost_partial_sig_verify(
+        ctx: *const Context,
+        partial_sig: *const FrostPartialSignature,
+        pubnonce: *const FrostPublicNonce,
+        pubshare: *const PublicKey,
+        session: *const FrostSession,
+        keygen_cache: *const FrostKeygenCache,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_agg"
+    )]
+    pub fn secp256k1_frost_partial_sig_agg(
+        ctx: *const Context,
+        sig64: *mut c_uchar,
+        session: *const FrostSession,
+        partial_sigs: *const *const FrostPartialSignature,
+        n_sigs: size_t,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_parity"
+    )]
+    pub fn secp256k1_frost_nonce_parity(
+        ctx: *const Context,
+        nonce_parity: *mut c_int,
+        session: *const FrostSession,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_verify_adaptor"
+    )]
+    pub fn secp256k1_frost_verify_adaptor(
+        ctx: *const Context,
+        pre_sig64: *const c_uchar,
+        msg32: *const c_uchar,
+        pubkey: *const XOnlyPublicKey,
+        adaptor: *const PublicKey,
+        nonce_parity: c_int,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_adapt"
+    )]
+    pub fn secp256k1_frost_adapt(
+        ctx: *const Context,
+        sig64: *mut c_uchar,
+        pre_sig64: *const c_uchar,
+        sec_adaptor32: *const c_uchar,
+        nonce_parity: c_int,
+    ) -> c_int;
+
+    #[cfg_attr(
+        not(feature = "external-symbols"),
+        link_name = "rustsecp256k1zkp_v0_10_0_frost_extract_adaptor"
+    )]
+    pub fn secp256k1_frost_extract_adaptor(
+        ctx: *const Context,
+        sec_adaptor32: *mut c_uchar,
+        sig64: *const c_uchar,
+        pre_sig64: *const c_uchar,
+        nonce_parity: c_int,
+    ) -> c_int;
 }
 
 #[repr(C)]
@@ -649,3 +925,46 @@ impl PartialEq for EcdsaAdaptorSignature {
 }
 
 impl Eq for EcdsaAdaptorSignature {}
+
+pub const FROST_SECRET_NONCE_SIZE: usize = 68;
+pub const FROST_PUBLIC_NONCE_SIZE: usize = 132;
+pub const FROST_PUBLIC_NONCE_SERIALIZED_SIZE: usize = 66;
+pub const FROST_PARTIAL_SIGNATURE_SIZE: usize = 36;
+pub const FROST_PARTIAL_SIGNATURE_SERIALIZED_SIZE: usize = 36;
+pub const FROST_SHARE_SIZE: usize = 36;
+pub const FROST_SHARE_SERIALIZED_SIZE: usize = 32;
+pub const FROST_KEYGEN_CACHE_SIZE: usize = 101;
+pub const FROST_SESSION_SIZE: usize = 133;
+
+macro_rules! define_array_newtype {
+    ($name: ident, $size: expr) => {
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        pub struct $name([c_uchar; $size]);
+        impl_array_newtype!($name, c_uchar, $size);
+        impl_raw_debug!($name);
+
+        #[cfg(not(fuzzing))]
+        impl PartialEq for $name {
+            fn eq(&self, other: &Self) -> bool {
+                &self.0[..] == &other.0[..]
+            }
+        }
+
+        #[cfg(not(fuzzing))]
+        impl Eq for $name {}
+
+        impl $name {
+            pub unsafe fn new() -> Self {
+                Self([0; $size])
+            }
+        }
+    };
+}
+
+define_array_newtype!(FrostSecretNonce, FROST_SECRET_NONCE_SIZE);
+define_array_newtype!(FrostPublicNonce, FROST_PUBLIC_NONCE_SIZE);
+define_array_newtype!(FrostPartialSignature, FROST_PARTIAL_SIGNATURE_SIZE);
+define_array_newtype!(FrostShare, FROST_SHARE_SIZE);
+define_array_newtype!(FrostKeygenCache, FROST_KEYGEN_CACHE_SIZE);
+define_array_newtype!(FrostSession, FROST_SESSION_SIZE);
