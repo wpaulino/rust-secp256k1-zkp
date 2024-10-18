@@ -1,4 +1,6 @@
 mod ecdsa_adaptor;
+#[cfg(feature = "std")]
+pub mod frost;
 mod generator;
 #[cfg(feature = "std")]
 mod pedersen;
@@ -10,6 +12,8 @@ mod tag;
 mod whitelist;
 
 pub use self::ecdsa_adaptor::*;
+#[cfg(feature = "std")]
+pub use self::frost::new_frost_nonce_pair;
 pub use self::generator::*;
 #[cfg(feature = "std")]
 pub use self::pedersen::*;
