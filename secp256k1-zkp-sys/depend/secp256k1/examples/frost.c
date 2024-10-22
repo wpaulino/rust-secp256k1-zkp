@@ -27,6 +27,7 @@
 struct signer_secrets {
     rustsecp256k1zkp_v0_10_0_keypair keypair;
     rustsecp256k1zkp_v0_10_0_frost_share agg_share;
+    rustsecp256k1zkp_v0_10_0_pubkey agg_vss_commitment[THRESHOLD];
     rustsecp256k1zkp_v0_10_0_frost_secnonce secnonce;
     unsigned char seed[32];
 };
@@ -100,7 +101,7 @@ int create_shares(const rustsecp256k1zkp_v0_10_0_context* ctx, struct signer_sec
             assigned_shares[j] = &shares[j][i];
         }
         /* Each participant aggregates the shares they received. */
-        if (!rustsecp256k1zkp_v0_10_0_frost_share_agg(ctx, &signer_secrets[i].agg_share, assigned_shares, vss_commitments, poks, N_SIGNERS, THRESHOLD, signer[i].id)) {
+        if (!rustsecp256k1zkp_v0_10_0_frost_share_agg(ctx, &signer_secrets[i].agg_share, &signer_secrets[i].agg_vss_commitment, assigned_shares, vss_commitments, poks, N_SIGNERS, THRESHOLD, signer[i].id)) {
             return 0;
         }
         for (j = 0; j < N_SIGNERS; j++) {

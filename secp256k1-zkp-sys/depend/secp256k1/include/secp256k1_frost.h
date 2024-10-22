@@ -227,9 +227,9 @@ SECP256K1_API int rustsecp256k1zkp_v0_10_0_frost_shares_gen(
  *  As part of the key generation protocol, each participant receives a share
  *  from each participant, including a share they "receive" from themselves.
  *  This function verifies those shares against their VSS commitments,
- *  aggregates the shares, and then aggregates the commitments to each
- *  participant's first polynomial coefficient to derive the aggregate public
- *  key.
+ *  aggregates the shares, and then aggregates the commitments at their
+ *  respective indices. The aggregate VSS commitment represents the final
+ *  polynomial, with the coefficient at index 0 representing the joint private key.
  *
  *  If this function returns an error, `rustsecp256k1zkp_v0_10_0_frost_share_verify` can be
  *  called on each share to determine which participants submitted faulty
@@ -239,6 +239,7 @@ SECP256K1_API int rustsecp256k1zkp_v0_10_0_frost_shares_gen(
  *           the resulting signature verifies).
  *  Args:         ctx: pointer to a context object
  *  Out:    agg_share: the aggregated share
+ * agg_vss_commitment: the aggregated coefficient commitments
  *  In:        shares: all key generation shares for the partcipant's index
  *    vss_commitments: coefficient commitments of all participants ordered by
  *                     the IDs of the participants
@@ -253,13 +254,14 @@ SECP256K1_API int rustsecp256k1zkp_v0_10_0_frost_shares_gen(
 SECP256K1_API int rustsecp256k1zkp_v0_10_0_frost_share_agg(
     const rustsecp256k1zkp_v0_10_0_context *ctx,
     rustsecp256k1zkp_v0_10_0_frost_share *agg_share,
+    rustsecp256k1zkp_v0_10_0_pubkey *agg_vss_commitment,
     const rustsecp256k1zkp_v0_10_0_frost_share * const *shares,
     const rustsecp256k1zkp_v0_10_0_pubkey * const *vss_commitments,
     const unsigned char * const *pok64s,
     size_t n_shares,
     size_t threshold,
     const unsigned char *id33
-) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(3) SECP256K1_ARG_NONNULL(4) SECP256K1_ARG_NONNULL(5) SECP256K1_ARG_NONNULL(8);
+) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(3) SECP256K1_ARG_NONNULL(4) SECP256K1_ARG_NONNULL(5) SECP256K1_ARG_NONNULL(6) SECP256K1_ARG_NONNULL(9);
 
 /** Verifies a share received during a key generation session
  *

@@ -410,7 +410,7 @@ impl FrostShare {
         poks: &[&schnorr::Signature],
         participant_id: &PublicKey,
         threshold: usize,
-    ) -> Result<FrostShare, FrostError> {
+    ) -> Result<(FrostShare, CoefficientCommitment), FrostError> {
         if threshold < 2
             || threshold > intermediate_shares.len()
             || threshold > coefficient_commitments.len()
@@ -431,11 +431,13 @@ impl FrostShare {
         let poks = poks.iter().map(|pok| pok.as_c_ptr()).collect::<Vec<_>>();
 
         let ret;
-        let aggregate_share = unsafe {
+        let (aggregate_share, vss_commitment) = unsafe {
             let mut aggregate_share = ffi::FrostShare::new();
+            let mut vss_commitment: Vec<ffi::PublicKey> = Vec::with_capacity(threshold);
             ret = ffi::secp256k1_frost_share_agg(
                 secp.ctx().as_ptr(),
                 &mut aggregate_share as *mut ffi::FrostShare,
+                vss_commitment.as_mut_ptr(),
                 intermediate_shares.as_ptr() as *const *const ffi::FrostShare,
                 coefficient_commitment_ptrs.as_ptr(),
                 poks.as_c_ptr(),
@@ -443,11 +445,11 @@ impl FrostShare {
                 threshold,
                 participant_id.serialize().as_c_ptr(),
             );
-            aggregate_share
+			(aggregate_share, vss_commitment)
         };
 
         if ret == 1 {
-            Ok(Self(aggregate_share))
+            Ok((Self(aggregate_share), CoefficientCommitment(vss_commitment)))
         } else {
             Err(FrostError::InvalidCommitment)
         }
@@ -904,6 +906,7 @@ mod tests {
         coefficient_commitment: CoefficientCommitment,
         proof_of_knowledge: Option<schnorr::Signature>,
         aggregate_share: Option<FrostShare>,
+        vss_commitment: CoefficientCommitment,
         verification_share: Option<VerificationShare>,
     }
 
@@ -937,6 +940,7 @@ mod tests {
                 coefficient_commitment: CoefficientCommitment::from_public_keys(Vec::new()),
                 proof_of_knowledge: None,
                 aggregate_share: None,
+                vss_commitment: CoefficientCommitment::from_public_keys(Vec::new()),
                 verification_share: None,
             });
             participant_ids.push(id);
@@ -980,7 +984,7 @@ mod tests {
                 .map(|participant| participant.proof_of_knowledge.as_ref().unwrap())
                 .collect::<Vec<_>>();
 
-            let aggregate_share = FrostShare::aggregate(
+            let (aggregate_share, vss_commitment) = FrostShare::aggregate(
                 &secp,
                 &intermediate_shares,
                 &coefficient_commitments
@@ -993,6 +997,11 @@ mod tests {
             )
             .unwrap();
             participants[i].aggregate_share = Some(aggregate_share);
+            participants[i].vss_commitment = vss_commitment;
+
+			if i > 0 {
+				assert_eq!(participants[i-1].vss_commitment, participants[i].vss_commitment);
+			}
 
             let verification_share = VerificationShare::new(
                 &secp,

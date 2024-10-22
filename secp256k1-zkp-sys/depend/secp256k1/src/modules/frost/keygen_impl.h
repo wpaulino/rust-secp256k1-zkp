@@ -240,9 +240,10 @@ typedef struct {
 
 typedef struct {
     const rustsecp256k1zkp_v0_10_0_context *ctx;
-    const rustsecp256k1zkp_v0_10_0_pubkey * const* pks;
-    size_t threshold;
-} rustsecp256k1zkp_v0_10_0_frost_pubkey_combine_ecmult_data;
+    const rustsecp256k1zkp_v0_10_0_pubkey * const* vss_commitments;
+    rustsecp256k1zkp_v0_10_0_scalar one;
+    size_t idx;
+} rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_data;
 
 typedef struct {
     const rustsecp256k1zkp_v0_10_0_context *ctx;
@@ -275,6 +276,12 @@ static int rustsecp256k1zkp_v0_10_0_frost_compute_pubshare_ecmult_callback(rusts
     rustsecp256k1zkp_v0_10_0_scalar_mul(&ctx->idxn, &ctx->idxn, &ctx->idx);
 
     return 1;
+}
+
+static int rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_callback(rustsecp256k1zkp_v0_10_0_scalar *sc, rustsecp256k1zkp_v0_10_0_ge *pt, size_t idx, void* data) {
+  rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_data *ctx = (rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_data *) data;
+  *sc = ctx->one;
+  return rustsecp256k1zkp_v0_10_0_pubkey_load(ctx->ctx, pt, &ctx->vss_commitments[ctx->idx][idx]);
 }
 
 static int rustsecp256k1zkp_v0_10_0_frost_interpolate_pubkey_ecmult_callback(rustsecp256k1zkp_v0_10_0_scalar *sc, rustsecp256k1zkp_v0_10_0_ge *pt, size_t idx, void *data) {
@@ -385,16 +392,18 @@ int rustsecp256k1zkp_v0_10_0_frost_compute_pubshare(const rustsecp256k1zkp_v0_10
     return 1;
 }
 
-int rustsecp256k1zkp_v0_10_0_frost_share_agg(const rustsecp256k1zkp_v0_10_0_context* ctx, rustsecp256k1zkp_v0_10_0_frost_share *agg_share, const rustsecp256k1zkp_v0_10_0_frost_share * const* shares, const rustsecp256k1zkp_v0_10_0_pubkey * const* vss_commitments, const unsigned char * const *pok64s, size_t n_shares, size_t threshold, const unsigned char *id33) {
+int rustsecp256k1zkp_v0_10_0_frost_share_agg(const rustsecp256k1zkp_v0_10_0_context* ctx, rustsecp256k1zkp_v0_10_0_frost_share *agg_share, rustsecp256k1zkp_v0_10_0_pubkey *agg_vss_commitment, const rustsecp256k1zkp_v0_10_0_frost_share * const* shares, const rustsecp256k1zkp_v0_10_0_pubkey * const* vss_commitments, const unsigned char * const *pok64s, size_t n_shares, size_t threshold, const unsigned char *id33) {
     rustsecp256k1zkp_v0_10_0_scalar acc;
     size_t i;
     int ret = 1;
     rustsecp256k1zkp_v0_10_0_sha256 sha;
     unsigned char buf[32];
+    rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_data agg_vss_commitments_ecmult_data;
 
     VERIFY_CHECK(ctx != NULL);
     ARG_CHECK(agg_share != NULL);
     memset(agg_share, 0, sizeof(*agg_share));
+    ARG_CHECK(agg_vss_commitment != NULL);
     ARG_CHECK(shares != NULL);
     ARG_CHECK(pok64s != NULL);
     ARG_CHECK(vss_commitments != NULL);
@@ -432,6 +441,21 @@ int rustsecp256k1zkp_v0_10_0_frost_share_agg(const rustsecp256k1zkp_v0_10_0_cont
         rustsecp256k1zkp_v0_10_0_scalar_add(&acc, &acc, &share_i);
     }
     rustsecp256k1zkp_v0_10_0_frost_share_save(agg_share, &acc);
+
+    agg_vss_commitments_ecmult_data.ctx = ctx;
+    agg_vss_commitments_ecmult_data.vss_commitments = vss_commitments;
+    rustsecp256k1zkp_v0_10_0_scalar_set_int(&agg_vss_commitments_ecmult_data.one, 1);
+    for (i = 0; i < threshold; i++) {
+      rustsecp256k1zkp_v0_10_0_ge pk;
+      rustsecp256k1zkp_v0_10_0_gej pkj;
+      agg_vss_commitments_ecmult_data.idx = i;
+      /* TODO: add scratch */
+      if (!rustsecp256k1zkp_v0_10_0_ecmult_multi_var(&ctx->error_callback, NULL, &pkj, NULL, rustsecp256k1zkp_v0_10_0_frost_agg_vss_commitments_ecmult_callback, (void *) &agg_vss_commitments_ecmult_data, threshold)) {
+          return 0;
+      }
+      rustsecp256k1zkp_v0_10_0_ge_set_gej(&pk, &pkj);
+      rustsecp256k1zkp_v0_10_0_pubkey_save(&agg_vss_commitment[i], &pk);
+    }
 
     return ret;
 }

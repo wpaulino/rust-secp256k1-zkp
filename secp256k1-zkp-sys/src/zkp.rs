@@ -474,6 +474,7 @@ extern "C" {
     pub fn secp256k1_frost_share_agg(
         ctx: *const Context,
         agg_share: *mut FrostShare,
+		agg_vss_commitment: *mut PublicKey,
         shares: *const *const FrostShare,
         vss_commitments: *const *const PublicKey,
         pok64s: *const *const c_uchar,

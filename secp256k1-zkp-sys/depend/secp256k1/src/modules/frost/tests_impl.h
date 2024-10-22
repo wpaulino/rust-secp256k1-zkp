@@ -50,6 +50,7 @@ void frost_simple_test(void) {
     rustsecp256k1zkp_v0_10_0_frost_share shares[5][5];
     const rustsecp256k1zkp_v0_10_0_frost_share *share_ptr[5];
     rustsecp256k1zkp_v0_10_0_frost_share agg_share[5];
+    rustsecp256k1zkp_v0_10_0_pubkey agg_vss_commitment[3];
     rustsecp256k1zkp_v0_10_0_frost_secnonce secnonce[5];
     rustsecp256k1zkp_v0_10_0_pubkey pubshare[5];
     rustsecp256k1zkp_v0_10_0_frost_partial_sig partial_sig[5];
@@ -84,7 +85,7 @@ void frost_simple_test(void) {
             CHECK(rustsecp256k1zkp_v0_10_0_frost_share_verify(CTX, 3, id_ptr[i], share_ptr[j], &vss_ptr[j]) == 1);
         }
         CHECK(rustsecp256k1zkp_v0_10_0_frost_compute_pubshare(CTX, &pubshare[i], 3, id_ptr[i], vss_ptr, 5) == 1);
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
     }
     CHECK(rustsecp256k1zkp_v0_10_0_frost_pubkey_gen(CTX, &cache, pubshare_ptr, 5, id_ptr) == 1);
 
@@ -176,6 +177,7 @@ void frost_api_tests(void) {
     const rustsecp256k1zkp_v0_10_0_pubkey *vss_ptr[5];
     const rustsecp256k1zkp_v0_10_0_pubkey *invalid_vss_ptr[5];
     rustsecp256k1zkp_v0_10_0_pubkey invalid_vss_pk;
+    rustsecp256k1zkp_v0_10_0_pubkey agg_vss_commitment[3];
     rustsecp256k1zkp_v0_10_0_frost_share shares[5][5];
     rustsecp256k1zkp_v0_10_0_frost_share invalid_share;
     rustsecp256k1zkp_v0_10_0_frost_share agg_share[5];
@@ -273,34 +275,35 @@ void frost_api_tests(void) {
             invalid_share_ptr[j] = &shares[j][i];
         }
         invalid_share_ptr[0] = &invalid_share;
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, invalid_pok_ptr, 5, 3, id_ptr[i]) == 0);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, invalid_pok_ptr, 5, 3, id_ptr[i]) == 0);
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, NULL, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], NULL, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, NULL, agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], NULL, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, NULL, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, NULL, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, NULL, pok_ptr, 5, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, invalid_vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, invalid_vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, NULL, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, NULL, 5, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, NULL));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, NULL));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], invalid_share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, invalid_share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 0, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 0, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], NULL, vss_ptr, pok_ptr, 0, 3, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, NULL, vss_ptr, pok_ptr, 0, 3, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 0, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 0, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, NULL, pok_ptr, 5, 0, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, NULL, pok_ptr, 5, 0, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
-        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, NULL, 5, 0, id_ptr[i]));
+        CHECK_ILLEGAL(CTX, rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, NULL, 5, 0, id_ptr[i]));
         CHECK(frost_memcmp_and_randomize(agg_share[i].data, zeros68, sizeof(agg_share[i].data)) == 0);
 
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
     }
 
     /* Share verification */
@@ -703,6 +706,7 @@ void frost_tweak_test(void) {
     unsigned char seed[5][32];
     rustsecp256k1zkp_v0_10_0_pubkey vss_commitment[5][3];
     const rustsecp256k1zkp_v0_10_0_pubkey *vss_ptr[5];
+    rustsecp256k1zkp_v0_10_0_pubkey agg_vss_commitment[3];
     unsigned char pok[5][64];
     rustsecp256k1zkp_v0_10_0_frost_share shares[5][5];
     const rustsecp256k1zkp_v0_10_0_frost_share *share_ptr[5];
@@ -733,7 +737,7 @@ void frost_tweak_test(void) {
             CHECK(rustsecp256k1zkp_v0_10_0_frost_share_verify(CTX, 3, id_ptr[i], share_ptr[j], &vss_ptr[j]) == 1);
         }
         CHECK(rustsecp256k1zkp_v0_10_0_frost_compute_pubshare(CTX, &pubshare[i], 3, id_ptr[i], vss_ptr, 5) == 1);
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, id_ptr[i]) == 1);
     }
     /* Compute P0 and test signing for it */
     CHECK(rustsecp256k1zkp_v0_10_0_frost_pubkey_gen(CTX, &keygen_cache, pubshare_ptr, 5, id_ptr) == 1);
@@ -777,6 +781,7 @@ void frost_tweak_test(void) {
 void frost_dkg_test_helper(rustsecp256k1zkp_v0_10_0_frost_keygen_cache *keygen_cache, rustsecp256k1zkp_v0_10_0_frost_share *agg_share, const unsigned char * const* ids33) {
     rustsecp256k1zkp_v0_10_0_pubkey vss_commitment[5][3];
     const rustsecp256k1zkp_v0_10_0_pubkey *vss_ptr[5];
+    rustsecp256k1zkp_v0_10_0_pubkey agg_vss_commitment[3];
     unsigned char pok[5][64];
     unsigned char seed[5][32];
     rustsecp256k1zkp_v0_10_0_frost_share shares[5][5];
@@ -800,7 +805,7 @@ void frost_dkg_test_helper(rustsecp256k1zkp_v0_10_0_frost_keygen_cache *keygen_c
             share_ptr[j] = &shares[j][i];
         }
         CHECK(rustsecp256k1zkp_v0_10_0_frost_compute_pubshare(CTX, &pubshare[i], 3, ids33[i], vss_ptr, 5) == 1);
-        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], share_ptr, vss_ptr, pok_ptr, 5, 3, ids33[i]) == 1);
+        CHECK(rustsecp256k1zkp_v0_10_0_frost_share_agg(CTX, &agg_share[i], agg_vss_commitment, share_ptr, vss_ptr, pok_ptr, 5, 3, ids33[i]) == 1);
     }
     CHECK(rustsecp256k1zkp_v0_10_0_frost_pubkey_gen(CTX, keygen_cache, pubshare_ptr, 5, ids33) == 1);
 }
