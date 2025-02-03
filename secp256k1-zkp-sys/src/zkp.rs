@@ -393,7 +393,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubnonce_parse"
     )]
     pub fn secp256k1_frost_pubnonce_parse(
@@ -403,7 +403,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubnonce_serialize"
     )]
     pub fn secp256k1_frost_pubnonce_serialize(
@@ -413,7 +413,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_parse"
     )]
     pub fn secp256k1_frost_partial_sig_parse(
@@ -423,7 +423,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_serialize"
     )]
     pub fn secp256k1_frost_partial_sig_serialize(
@@ -433,7 +433,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_share_parse"
     )]
     pub fn secp256k1_frost_share_parse(
@@ -443,7 +443,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_share_serialize"
     )]
     pub fn secp256k1_frost_share_serialize(
@@ -453,7 +453,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_shares_gen"
     )]
     pub fn secp256k1_frost_shares_gen(
@@ -468,7 +468,7 @@ extern "C" {
     ) -> c_uint;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_share_agg"
     )]
     pub fn secp256k1_frost_share_agg(
@@ -484,7 +484,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_share_verify"
     )]
     pub fn secp256k1_frost_share_verify(
@@ -496,7 +496,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_compute_pubshare"
     )]
     pub fn secp256k1_frost_compute_pubshare(
@@ -509,7 +509,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_gen"
     )]
     pub fn secp256k1_frost_pubkey_gen(
@@ -521,7 +521,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_get"
     )]
     pub fn secp256k1_frost_pubkey_get(
@@ -531,7 +531,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_ec_tweak_add"
     )]
     pub fn secp256k1_frost_pubkey_ec_tweak_add(
@@ -542,7 +542,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_pubkey_xonly_tweak_add"
     )]
     pub fn secp256k1_frost_pubkey_xonly_tweak_add(
@@ -553,7 +553,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_gen"
     )]
     pub fn secp256k1_frost_nonce_gen(
@@ -568,7 +568,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_process"
     )]
     pub fn secp256k1_frost_nonce_process(
@@ -584,7 +584,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sign"
     )]
     pub fn secp256k1_frost_partial_sign(
@@ -597,7 +597,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_verify"
     )]
     pub fn secp256k1_frost_partial_sig_verify(
@@ -610,7 +610,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_partial_sig_agg"
     )]
     pub fn secp256k1_frost_partial_sig_agg(
@@ -622,7 +622,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_nonce_parity"
     )]
     pub fn secp256k1_frost_nonce_parity(
@@ -632,7 +632,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_verify_adaptor"
     )]
     pub fn secp256k1_frost_verify_adaptor(
@@ -645,7 +645,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_adapt"
     )]
     pub fn secp256k1_frost_adapt(
@@ -657,7 +657,7 @@ extern "C" {
     ) -> c_int;
 
     #[cfg_attr(
-        not(feature = "external-symbols"),
+        not(rust_secp_zkp_no_symbol_renaming),
         link_name = "rustsecp256k1zkp_v0_10_0_frost_extract_adaptor"
     )]
     pub fn secp256k1_frost_extract_adaptor(
